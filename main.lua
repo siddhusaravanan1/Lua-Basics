@@ -15,10 +15,10 @@ function love.load()
     player.cardGrid = anim8.newGrid(100, 144, player.cardSpriteSheet:getWidth(), player.cardSpriteSheet:getHeight())
 
     player.spriteSheetRun = love.graphics.newImage('sprites/_Run.png') --assigning the spritesheet
-    player.gridRun = anim8.newGrid(32, 48, player.spriteSheetRun:getWidth(), player.spriteSheetRun:getHeight()) --assigning the grid using the given spritesheet (size of the sprite and size of the canvas)
+    player.gridRun = anim8.newGrid(48, 48, player.spriteSheetRun:getWidth(), player.spriteSheetRun:getHeight()) --assigning the grid using the given spritesheet (size of the sprite and size of the canvas)
     
     player.spriteSheetIdle = love.graphics.newImage('sprites/_Idle.png')
-    player.gridIdle = anim8.newGrid(32, 48, player.spriteSheetIdle:getWidth(), player.spriteSheetIdle:getHeight())
+    player.gridIdle = anim8.newGrid(48, 48, player.spriteSheetIdle:getWidth(), player.spriteSheetIdle:getHeight())
 
     player.animation = {}
 
