@@ -64,7 +64,27 @@ function love.update(dt)
         player.anim = player.animation.idle
     end
     player.anim:update(dt)
+
     cam:lookAt(player.x, player.y)
+
+    -- Get screen and tilemap dimensions
+    local screenW = love.graphics.getWidth()
+    local mapW = gamemap.width * gamemap.tilewidth
+
+    -- Adjust camera bounds dynamically
+    local minX = mapW - (screenW * 1.5)  -- Leftmost boundary (player should not see outside the map)
+    local maxX = mapW - (screenW * -0.70)
+    
+    if cam.x < minX then
+        cam.x = minX
+    end
+
+    if cam.x > maxX then
+        cam.x = maxX
+    end
+
+    -- Make sure the camera stops exactly at the map edges
+    --cam.x = math.max(minX, math.min(player.x, maxX))
 end
 
 function love.draw()
