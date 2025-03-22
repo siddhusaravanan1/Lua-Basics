@@ -14,6 +14,13 @@ function love.load()
     sti = require('libraries/sti')-- to import tileset support
     gamemap = sti('sprites/tileset/tileset.lua')
 
+    sound = {}
+    sound.mainMusic = love.audio.newSource('music/MainMusic.mp3', 'stream')
+    sound.walkSFX = love.audio.newSource('music/Walk.mp3', 'static')
+    sound.mainMusic:setVolume(0.25)
+    sound.mainMusic:setLooping(true)
+    sound.mainMusic:play()
+
     --Player Basic Attributes
     player = {}
     player.x = 300
@@ -24,20 +31,23 @@ function love.load()
     player.collision = world:newBSGRectangleCollider(300, 240, 40, 75, 10)
     player.collision:setFixedRotation(true)
 
-    player.spriteSheetRightRun = love.graphics.newImage('sprites/_RunRight.png') --assigning the spritesheet
+    player.spriteSheetRightRun = love.graphics.newImage('sprites/runRight.png') --assigning the spritesheet
     player.gridRunRight = anim8.newGrid(48, 48, player.spriteSheetRightRun:getWidth(), player.spriteSheetRightRun:getHeight()) --assigning the grid using the given spritesheet (size of the sprite and size of the canvas)
 
-    player.spriteSheetRunLeft = love.graphics.newImage('sprites/_RunLeft.png')
+    player.spriteSheetRunLeft = love.graphics.newImage('sprites/runLeft.png')
     player.gridRunLeft = anim8.newGrid(48, 48, player.spriteSheetRunLeft:getWidth(), player.spriteSheetRunLeft:getHeight())
     
-    player.spriteSheetIdle = love.graphics.newImage('sprites/_Idle.png')
+    player.spriteSheetIdle = love.graphics.newImage('sprites/idle.png')
     player.gridIdle = anim8.newGrid(48, 48, player.spriteSheetIdle:getWidth(), player.spriteSheetIdle:getHeight())
+
+    player.spriteSheetAttack = love.graphics.newImage('sprites/attack.png')
+    player.gridAttack = anim8.newGrid(80, 48, player.spriteSheetAttack:getWidth(), player.spriteSheetAttack:getHeight())
 
     player.animation = {}
     player.animation.runRight = anim8.newAnimation(player.gridRunRight('1-10', 1), 0.075) --setting up animation using the grid and the frames inside the grid with starting index and speed of next frame transition
     player.animation.runLeft = anim8.newAnimation(player.gridRunLeft('1-10', 1), 0.075)
     player.animation.idle = anim8.newAnimation(player.gridIdle('1-10', 1), 0.25)
-
+    player.animation.attack = anim8.newAnimation(player.gridAttack('1-4', 1), 0.1)
 
     player.spriteSheet = player.spriteSheetIdle
     player.anim = player.animation.idle
@@ -50,16 +60,26 @@ function love.load()
             table.insert(Colliders, collider)
         end
     end
+
+
 end
 
 function love.update(dt)
     local isMoving = false
+    local isAttacking = false
+
+    player.spriteSheet = player.spriteSheetIdle
+    player.anim = player.animation.idle
 
     local velX = 0
     local velY = 0
 
+    sound.walkSFX:setLooping(false)
+
     if love.keyboard.isDown("d") then
         velX = player.speed
+        sound.walkSFX:setLooping(true)
+        sound.walkSFX:play()
         player.facing = "right"
         player.spriteSheet = player.spriteSheetRightRun
         player.anim = player.animation.runRight
@@ -67,16 +87,21 @@ function love.update(dt)
     end
     if love.keyboard.isDown("a") then
         velX = player.speed * -1
+        sound.walkSFX:setLooping(true)
+        sound.walkSFX:play()
         player.facing = "left"
         player.spriteSheet = player.spriteSheetRunLeft
         player.anim = player.animation.runLeft
         isMoving = true
     end
 
-    if isMoving == false then
-        player.spriteSheet = player.spriteSheetIdle
-        player.anim = player.animation.idle
+    if love.keyboard.isDown("z") then
+        isAttacking = true
+        player.spriteSheet = player.spriteSheetAttack
+        player.anim = player.animation.attack
+        isAttacking = false
     end
+
     player.collision:setLinearVelocity(velX, 0)
     player.anim:update(dt)
     world:update(dt)
