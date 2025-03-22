@@ -1,3 +1,5 @@
+local startTime = love.timer.getTime()
+local crtShader
 function love.load()
 
     wf = require('libraries/windfield')
@@ -13,6 +15,8 @@ function love.load()
 
     sti = require('libraries/sti')-- to import tileset support
     gamemap = sti('sprites/tileset/tileset.lua')
+
+    crtShader = love.graphics.newShader('shaders/crt.glsl')
 
     sound = {}
     sound.mainMusic = love.audio.newSource('music/MainMusic.mp3', 'stream')
@@ -124,16 +128,21 @@ function love.update(dt)
 end
 
 function love.draw()
+    
     cam:attach()
         gamemap:drawLayer(gamemap.layers['BG'])
+        --crtShader:send('millis', love.timer.getTime() - startTime)
+        --love.graphics.setShader(crtShader)
         gamemap:drawLayer(gamemap.layers['BG1'])
         gamemap:drawLayer(gamemap.layers['BG2'])
         gamemap:drawLayer(gamemap.layers['BG3'])
         gamemap:drawLayer(gamemap.layers['BG4'])
+        --love.graphics.setShader()
         gamemap:drawLayer(gamemap.layers['Platform'])
         gamemap:drawLayer(gamemap.layers['Trees'])
         gamemap:drawLayer(gamemap.layers['Grass'])
         player.anim:draw(player.spriteSheet, player.x, player.y, nil, 2, nil, 24, 30)
         --world:draw()
     cam:detach()
+
 end
