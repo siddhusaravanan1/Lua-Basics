@@ -28,7 +28,7 @@ function love.load()
     player.speed = 300
     player.jumpSpeed = -1000
     player.facing = "right"
-    player.collision = world:newBSGRectangleCollider(300, 240, 40, 75, 10)
+    player.collision = world:newBSGRectangleCollider(300, 240, 30, 75, 10)
     player.collision:setFixedRotation(true)
 
     player.spriteSheetRightRun = love.graphics.newImage('sprites/runRight.png') --assigning the spritesheet
@@ -95,12 +95,6 @@ function love.update(dt)
         isMoving = true
     end
 
-    if love.keyboard.isDown("z") then
-        isAttacking = true
-        player.spriteSheet = player.spriteSheetAttack
-        player.anim = player.animation.attack
-        isAttacking = false
-    end
 
     player.collision:setLinearVelocity(velX, 0)
     player.anim:update(dt)
@@ -139,7 +133,7 @@ function love.draw()
         gamemap:drawLayer(gamemap.layers['Platform'])
         gamemap:drawLayer(gamemap.layers['Trees'])
         gamemap:drawLayer(gamemap.layers['Grass'])
-        player.anim:draw(player.spriteSheet, player.x, player.y, nil, 2, nil, 24, 24)
+        player.anim:draw(player.spriteSheet, player.x, player.y, nil, 2, nil, 24, 30)
         --world:draw()
     cam:detach()
 end
