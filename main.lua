@@ -1,5 +1,9 @@
 local startTime = love.timer.getTime()
 local crtShader
+local canvas
+
+local screenWidth = love.graphics.getWidth()
+local screenHeight = love.graphics.getHeight()
 function love.load()
 
     wf = require('libraries/windfield')
@@ -17,6 +21,7 @@ function love.load()
     gamemap = sti('sprites/tileset/tileset.lua')
 
     crtShader = love.graphics.newShader('shaders/crt.glsl')
+    canvas = love.graphics.newCanvas(screenWidth, screenHeight, { type = '2d', readable = true })
 
     sound = {}
     sound.mainMusic = love.audio.newSource('music/MainMusic.mp3', 'stream')
@@ -109,12 +114,11 @@ function love.update(dt)
     cam:lookAt(player.x, player.y)
 
     -- Get screen and tilemap dimensions
-    local screenW = love.graphics.getWidth()
     local mapW = gamemap.width * gamemap.tilewidth
 
     -- Adjust camera bounds dynamically
-    local minX = mapW - (screenW * 1.52)  -- Leftmost boundary (player should not see outside the map)
-    local maxX = mapW - (screenW * -0.72)
+    local minX = mapW - (screenWidth * 1.52)  -- Leftmost boundary (player should not see outside the map)
+    local maxX = mapW - (screenWidth * -0.72)
     
     if cam.x < minX then
         cam.x = minX
@@ -128,21 +132,23 @@ function love.update(dt)
 end
 
 function love.draw()
-    
+    love.graphics.setCanvas(canvas)
     cam:attach()
         gamemap:drawLayer(gamemap.layers['BG'])
-        --crtShader:send('millis', love.timer.getTime() - startTime)
-        --love.graphics.setShader(crtShader)
         gamemap:drawLayer(gamemap.layers['BG1'])
         gamemap:drawLayer(gamemap.layers['BG2'])
         gamemap:drawLayer(gamemap.layers['BG3'])
         gamemap:drawLayer(gamemap.layers['BG4'])
-        --love.graphics.setShader()
         gamemap:drawLayer(gamemap.layers['Platform'])
         gamemap:drawLayer(gamemap.layers['Trees'])
         gamemap:drawLayer(gamemap.layers['Grass'])
         player.anim:draw(player.spriteSheet, player.x, player.y, nil, 2, nil, 24, 30)
         --world:draw()
     cam:detach()
+    love.graphics.setCanvas()
+    crtShader:send('millis', love.timer.getTime() - startTime)
+    love.graphics.setShader(crtShader)
+    love.graphics.draw(canvas, 0, 0)
+    love.graphics.setShader()
 
 end
