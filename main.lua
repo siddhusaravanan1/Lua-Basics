@@ -8,6 +8,8 @@ function love.load()
 
     wf = require('libraries/windfield')
     world = wf.newWorld(0, 10000)
+    world:addCollisionClass('Solid')
+    world:addCollisionClass('Ghost', {ignores = {'Solid'}})
 
     camera = require('libraries/camera')
     cam = camera()
@@ -39,6 +41,7 @@ function love.load()
     player.facing = "right"
     player.collision = world:newBSGRectangleCollider(300, 240, 30, 75, 10)
     player.collision:setFixedRotation(true)
+    player.collision:setCollisionClass('Solid')
 
     player.spriteSheetRightRun = love.graphics.newImage('sprites/runRight.png') --assigning the spritesheet
     player.gridRunRight = anim8.newGrid(48, 48, player.spriteSheetRightRun:getWidth(), player.spriteSheetRightRun:getHeight()) --assigning the grid using the given spritesheet (size of the sprite and size of the canvas)
@@ -65,6 +68,7 @@ function love.load()
     if gamemap.layers['Collisions'] then
         for i, obj in pairs(gamemap.layers['Collisions'].objects) do
             local platform = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            platform:setCollisionClass('Solid')
             platform:setType('static')
             table.insert(Colliders, collider)
         end
